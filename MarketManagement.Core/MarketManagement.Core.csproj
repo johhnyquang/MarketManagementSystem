@@ -10,14 +10,6 @@
     <Folder Include="DTOs\" />
     <Folder Include="Hubs\" />
     <Folder Include="Contants\" />
-    <Folder Include="Repositories\InventoryRepository\" />
-    <Folder Include="Repositories\CartRepository\" />
-    <Folder Include="Repositories\DocumentRepository\" />
-    <Folder Include="Repositories\OrderRepository\" />
-    <Folder Include="Repositories\PurchaseOrderRepository\" />
-    <Folder Include="Repositories\ProductRepository\" />
-    <Folder Include="Repositories\UserRepository\" />
-    <Folder Include="Repositories\RoleRepository\" />
     <Folder Include="Services\" />
   </ItemGroup>
 
