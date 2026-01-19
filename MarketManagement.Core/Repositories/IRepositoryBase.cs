@@ -13,6 +13,11 @@ namespace MarketManagement.Core.Repositories
         Task<IEnumerable<TEntity>> GetAllAsync();
         Task<IEnumerable<TEntity>> FindAsync(Expression<Func<TEntity, bool>> predicate);
         Task<TEntity?> FirstOrDefaultAsync(Expression<Func<TEntity, bool>> predicate);
+        Task<bool> AnyAsync(Expression<Func<TEntity, bool>> predicate);
+        Task<int> CountAsync(Expression<Func<TEntity, bool>> predicate);
+        Task<IEnumerable<TEntity>> GetWithIncludesAsync(Expression<Func<TEntity, bool>>? whereClause = null, params Expression<Func<TEntity, object>>[] includeClause);
+        Task<TEntity?> GetWithIncludeAsync(Expression<Func<TEntity, bool>> whereClause, params Expression<Func<TEntity, object>>[] includeClause);
+
         Task AddAsync(TEntity entity);
         Task AddRangeAsync(IEnumerable<TEntity> entities);
         void DeleteAsync(TEntity entity);
