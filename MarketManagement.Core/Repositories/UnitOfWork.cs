@@ -23,60 +23,69 @@ namespace MarketManagement.Core.Repositories
         private readonly AppDbContext _context;
         private IDbContextTransaction? _transaction;
 
-        public UnitOfWork(AppDbContext _context)
+        public UnitOfWork(AppDbContext context)
         {
-            this._context = _context;
-
-            UserRepository = new UserRepository.UserRepository(_context);
-            RoleRepository = new RoleRepository.RoleRepository(_context);
-            InventoryRepository = new InventoryRepository.InventoryRepository(_context);
-            ProductRepository = new ProductRepository.ProductRepository(_context);
-            PurchaseOrderRepository = new PurchaseOrderRepository.PurchaseOrderRepository(_context);
-            OrderRepository = new OrderRepository.OrderRepository(_context);
-            DocumentRepository = new DocumentRepository.DocumentRepository(_context);
-            CartRepository = new CartRepository.CartRepository(_context);
-            CategoryRepository = new Repositories.RepositoryBase<CategoryEntity>(_context);
-            FunctionRepository = new Repositories.RepositoryBase<FunctionEntity>(_context);
-            MovementTypeRepository = new Repositories.RepositoryBase<MovementTypeEntity>(_context);
-            NotificationRepository = new Repositories.RepositoryBase<NotificationEntity> (_context);
-            SupplierRepository = new Repositories.RepositoryBase<SupplierEntity>(_context);
-            WarehouseRepository = new Repositories.RepositoryBase<WarehouseEntity>(_context);
+            _context = context ?? throw new ArgumentNullException(nameof(context)); 
         }
-        public IUserRepository UserRepository { get; }
 
-        public IRoleRepository RoleRepository { get; }
+        private IUserRepository? _userRepository;
+        public IUserRepository UserRepository => _userRepository ??= new UserRepository.UserRepository(_context);
 
-        public IInventoryRepository InventoryRepository { get; }
+        private IRoleRepository? _roleRepository;
+        public IRoleRepository RoleRepository => _roleRepository ??= new RoleRepository.RoleRepository(_context);
 
-        public IProductRepository ProductRepository { get; }
+        private IInventoryRepository? _inventoryRepository;
+        public IInventoryRepository InventoryRepository => _inventoryRepository ??= new InventoryRepository.InventoryRepository(_context);
 
-        public IPurchaseOrderRepository PurchaseOrderRepository { get; }
+        private IProductRepository? _productRepository;
+        public IProductRepository ProductRepository => _productRepository ??= new ProductRepository.ProductRepository(_context);
 
-        public IOrderRepository OrderRepository { get; }
+        private IPurchaseOrderRepository? _purchaseOrderRepository;
+        public IPurchaseOrderRepository PurchaseOrderRepository => _purchaseOrderRepository ??= new PurchaseOrderRepository.PurchaseOrderRepository(_context);
 
-        public IDocumentRepository DocumentRepository { get; }
+        private IOrderRepository? _orderRepository;
+        public IOrderRepository OrderRepository => _orderRepository ??= new OrderRepository.OrderRepository(_context);
 
-        public ICartRepository CartRepository { get; }
+        private IDocumentRepository? _documentRepository;
+        public IDocumentRepository DocumentRepository => _documentRepository ??= new DocumentRepository.DocumentRepository(_context);
 
-        public IRepositoryBase<CategoryEntity> CategoryRepository { get; }
+        private ICartRepository? _cartRepository;
+        public ICartRepository CartRepository => _cartRepository ??= new CartRepository.CartRepository(_context);
 
-        public IRepositoryBase<FunctionEntity> FunctionRepository { get; }
+        private IRepositoryBase<CategoryEntity>? _categoryRepository;
+        public IRepositoryBase<CategoryEntity> CategoryRepository => _categoryRepository ??= new Repositories.RepositoryBase<CategoryEntity>(_context);
 
-        public IRepositoryBase<MovementTypeEntity> MovementTypeRepository { get; }
+        private IRepositoryBase<FunctionEntity>? _functionRepository;
+        public IRepositoryBase<FunctionEntity> FunctionRepository => _functionRepository ??= new Repositories.RepositoryBase<FunctionEntity>(_context);
 
-        public IRepositoryBase<NotificationEntity> NotificationRepository { get; }
+        private IRepositoryBase<MovementTypeEntity>? _movementTypeRepository;
+        public IRepositoryBase<MovementTypeEntity> MovementTypeRepository => _movementTypeRepository ??= new Repositories.RepositoryBase<MovementTypeEntity>(_context);
 
-        public IRepositoryBase<SupplierEntity> SupplierRepository { get; }
+        private IRepositoryBase<NotificationEntity>? _notificationRepository;
+        public IRepositoryBase<NotificationEntity> NotificationRepository => _notificationRepository ??= new Repositories.RepositoryBase<NotificationEntity>(_context);
 
-        public IRepositoryBase<WarehouseEntity> WarehouseRepository { get; }
+        private IRepositoryBase<SupplierEntity>? _supplierRepository;
+        public IRepositoryBase<SupplierEntity> SupplierRepository => _supplierRepository ??= new Repositories.RepositoryBase<SupplierEntity>(_context);
+
+        private IRepositoryBase<WarehouseEntity>? _warehouseRepository;
+        public IRepositoryBase<WarehouseEntity> WarehouseRepository => _warehouseRepository ??= new Repositories.RepositoryBase<WarehouseEntity>(_context);
 
         public async Task BeginTransactionAsync()
         {
+            if (_transaction != null)
+            {
+                throw new InvalidOperationException("Transaction đã tồn tại");
+            }
             _transaction = await _context.Database.BeginTransactionAsync();
         }
 
         public async Task CommitTransactionAsync()
         {
+            if (_transaction == null)
+            {
+                throw new InvalidOperationException("Chưa có transaction nào được khởi tạo");
+            }
+
             try
             {
                 await SaveChangesAsync();
